@@ -96,7 +96,7 @@ CalcPAC <- function(x1 = 0.1, x2 = 0.9, # threshold defining the intermediate su
 ############################
 # MultiK main algorithm #
 ############################
-MultiK = function(seu, resolution = seq(0.05, 2, 0.05), nPC = 30, reps = 100, pSample = 0.8, seed = NULL) {
+MultiK = function(seu, resolution = seq(0.05, 2, 0.05), nPC = 30, reps = 100, pSample = 0.8, seed = NULL,group.by.vars="orig.ident") {
 
   if (is.null(seed) == TRUE) {
     seed <- timeSeed <- as.numeric(Sys.time())
@@ -136,6 +136,7 @@ MultiK = function(seu, resolution = seq(0.05, 2, 0.05), nPC = 30, reps = 100, pS
     subX <- ScaleData(object = subX, features = all.genes, verbose=F)
     # Run PCA to reduce dimensions
     subX <- RunPCA(object = subX, features = VariableFeatures(object = subX), npcs = 50, verbose=F)
+    subX <- harmony::RunHarmony(object = subX, group.by.vars=group.by.vars,dims.use=nPC)
     # Run Clustering
     subX <- FindNeighbors(object = subX,
                           k.param = 20, # default is 20-nearest neighbors
@@ -377,7 +378,7 @@ getClusters <- function(seu, optK) {
 
   # Run PCA to reduce dimensions
   seu <- RunPCA(object = seu, features = VariableFeatures(object = seu), npcs = 50, verbose = FALSE)
-
+  seu <- harmony::RunHarmony(object = seu, group.by.vars="orig.ident",dims.use=nPC)
   # Run Clustering
   k.param <- 20
   nPC <- 30
