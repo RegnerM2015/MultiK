@@ -22,6 +22,7 @@ getClusters <- function(seu, optK) {
 
   # Run PCA to reduce dimensions
   seu <- RunPCA(object = seu, features = VariableFeatures(object = seu), npcs = 50, verbose = FALSE)
+  seu <- harmony::RunHarmony(object=seu,group.by.vars="orig.ident",dims.use= nPC)
 
   # Run Clustering
   k.param <- 20
